@@ -1,0 +1,209 @@
+{
+  "id": null,
+  "title": "Client Monitoring Dashboard",
+  "tags": ["monitoring", "clients", "system"],
+  "timezone": "browser",
+  "editable": true,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Active Clients",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "count(up{job=~\"client-.*\"} == 1)",
+          "legendFormat": "Active Clients",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "thresholds": {
+            "steps": [
+              {"color": "red", "value": 0},
+              {"color": "yellow", "value": 1},
+              {"color": "green", "value": 2}
+            ]
+          }
+        }
+      },
+      "gridPos": {"h": 6, "w": 6, "x": 0, "y": 0}
+    },
+    {
+      "id": 2,
+      "title": "CPU Usage",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "host_cpu_usage",
+          "legendFormat": "{{hostname}} CPU %",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100
+        }
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 6, "y": 0}
+    },
+    {
+      "id": 3,
+      "title": "Memory Usage",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "host_memory_usage",
+          "legendFormat": "{{hostname}} Memory %",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100
+        }
+      },
+      "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0}
+    },
+    {
+      "id": 4,
+      "title": "Videos Processed",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "videos_processed_total",
+          "legendFormat": "{{hostname}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "unit": "short"
+        }
+      },
+      "gridPos": {"h": 6, "w": 6, "x": 0, "y": 6}
+    },
+    {
+      "id": 5,
+      "title": "Disk Usage",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "host_disk_usage",
+          "legendFormat": "{{hostname}} Disk %",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100
+        }
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 6, "y": 8}
+    },
+    {
+      "id": 6,
+      "title": "MySQL Connections",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "mysql_active_connections",
+          "legendFormat": "{{hostname}} DB Connections",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0
+        }
+      },
+      "gridPos": {"h": 8, "w": 6, "x": 18, "y": 8}
+    },
+    {
+      "id": 7,
+      "title": "System Resources Overview",
+      "type": "table",
+      "targets": [
+        {
+          "expr": "host_cpu_usage",
+          "legendFormat": "",
+          "refId": "A",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "expr": "host_memory_usage",
+          "legendFormat": "",
+          "refId": "B",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "expr": "host_disk_usage",
+          "legendFormat": "",
+          "refId": "C",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "expr": "mysql_active_connections",
+          "legendFormat": "",
+          "refId": "D",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "expr": "videos_processed_total",
+          "legendFormat": "",
+          "refId": "E",
+          "format": "table",
+          "instant": true
+        }
+      ],
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "__name__": true,
+              "client_id": true,
+              "instance": true,
+              "job": true
+            },
+            "renameByName": {
+              "hostname": "Client",
+              "Value #A": "CPU %",
+              "Value #B": "Memory %",
+              "Value #C": "Disk %",
+              "Value #D": "DB Connections",
+              "Value #E": "Videos Processed"
+            }
+          }
+        }
+      ],
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16}
+    }
+  ],
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "version": 1,
+  "uid": "client-monitoring"
+}

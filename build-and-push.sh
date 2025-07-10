@@ -12,6 +12,7 @@ echo "📦 Building client image..."
 cd client-docker
 docker buildx build \
     --platform linux/amd64,linux/arm64,linux/arm/v7 \
+    --no-cache \
     --tag nikhilvyamsani/client:latest \
     --push .
 
@@ -21,6 +22,7 @@ echo "✅ Client image pushed successfully"
 echo "📦 Building server image..."
 cd ../server-docker
 docker buildx build \
+    --no-cache \
     --platform linux/amd64,linux/arm64,linux/arm/v7 \
     --tag nikhilvyamsani/server:latest \
     --push .

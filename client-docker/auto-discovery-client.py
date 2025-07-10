@@ -56,14 +56,17 @@ def get_local_ip():
         return socket.gethostbyname(socket.gethostname())
 
 def register_with_central(central_host, max_retries=3):
-    """Register this client with central monitoring using public IP"""
+    """Register this client with central monitoring"""
     hostname = socket.gethostname()
     public_ip = get_public_ip()
+    
+    # Get port from environment variable
+    port = int(os.getenv('METRICS_PORT', 8118))
     
     client_info = {
         "hostname": hostname,
         "ip": public_ip,
-        "port": 8118,
+        "port": port,
         "metrics_path": "/metrics"
     }
     
@@ -160,13 +163,17 @@ def get_db_metrics():
 if __name__ == '__main__':
     hostname = socket.gethostname()
     central_host = os.getenv('CENTRAL_HOST', 'https://monitoring.takeleap.in')
+    metrics_port = int(os.getenv('METRICS_PORT', 8118))
     
-    print(f"Starting client exporter: {hostname}")
-    print(f"Central monitoring: {central_host}")
-    print(f"Detecting public IP for registration...")
+    print(f"🚀 Starting client exporter: {hostname}")
+    print(f"🌐 Central monitoring: {central_host}")
+    print(f"📊 Metrics port: {metrics_port}")
+    print(f"🔍 Detecting public IP for registration...")
     
-    # Start metrics server
-    start_http_server(8118)
+    # Start metrics server on all interfaces (0.0.0.0) so it's accessible from outside container
+    print(f"🚀 Starting metrics server on port {metrics_port}...")
+    start_http_server(metrics_port, addr='0.0.0.0')
+    print(f"✅ Metrics server started on port {metrics_port} (accessible from outside container)")
     
     # Register with central (with retry)
     registration_success = register_with_central(central_host)

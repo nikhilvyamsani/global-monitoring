@@ -3,9 +3,14 @@ from flask import Flask, request, jsonify
 import yaml
 import os
 import subprocess
+import time
+from collections import defaultdict
 
 app = Flask(__name__)
 PROMETHEUS_CONFIG = '/app/central-prometheus.yml'
+
+# In-memory storage for pushed metrics
+metrics_store = defaultdict(dict)
 
 def ensure_prometheus_config():
     """Create Prometheus config if it doesn't exist"""
@@ -200,42 +205,81 @@ def list_clients():
         print(f"❌ Error listing clients: {e}")
         return jsonify({"error": str(e)}), 500
 
+@app.route('/metrics', methods=['POST'])
+def receive_metrics():
+    """Receive pushed metrics from clients"""
+    try:
+        metrics_data = request.json
+        client_id = metrics_data['client_id']
+        
+        # Store metrics with timestamp
+        metrics_store[client_id] = {
+            'hostname': metrics_data['hostname'],
+            'timestamp': metrics_data['timestamp'],
+            'metrics': metrics_data['metrics'],
+            'last_seen': int(time.time())
+        }
+        
+        print(f"✅ Received metrics from {client_id}: CPU={metrics_data['metrics']['cpu_usage']}%")
+        return jsonify({"status": "success", "message": "Metrics received"})
+    except Exception as e:
+        print(f"❌ Error receiving metrics: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/metrics', methods=['GET'])
+def export_metrics():
+    """Export metrics in Prometheus format"""
+    try:
+        prometheus_metrics = []
+        current_time = int(time.time())
+        
+        for client_id, data in metrics_store.items():
+            # Skip stale metrics (older than 60 seconds)
+            if current_time - data['last_seen'] > 60:
+                continue
+                
+            hostname = data['hostname']
+            metrics = data['metrics']
+            
+            # Format metrics in Prometheus format
+            prometheus_metrics.extend([
+                f'host_cpu_usage{{client_id="{client_id}",hostname="{hostname}"}} {metrics["cpu_usage"]}',
+                f'host_memory_usage{{client_id="{client_id}",hostname="{hostname}"}} {metrics["memory_usage"]}',
+                f'host_disk_usage{{client_id="{client_id}",hostname="{hostname}"}} {metrics["disk_usage"]}',
+                f'mysql_active_connections{{client_id="{client_id}",hostname="{hostname}"}} {metrics["mysql_connections"]}',
+                f'videos_processed_total{{client_id="{client_id}",hostname="{hostname}"}} {metrics["videos_processed"]}'
+            ])
+        
+        return '\n'.join(prometheus_metrics) + '\n', 200, {'Content-Type': 'text/plain'}
+    except Exception as e:
+        print(f"❌ Error exporting metrics: {e}")
+        return f"# Error: {e}\n", 500, {'Content-Type': 'text/plain'}
+
 @app.route('/status', methods=['GET'])
 def system_status():
-    """Get system status including Prometheus targets"""
+    """Get system status including active clients"""
     try:
         print("🔍 Checking system status...")
         
-        # Check Prometheus health
-        import requests
-        prom_healthy = False
-        try:
-            response = requests.get('http://localhost:9090/-/healthy', timeout=5)
-            prom_healthy = response.status_code == 200
-        except:
-            pass
+        current_time = int(time.time())
+        active_clients = []
         
-        # Get current targets from Prometheus
-        targets = []
-        try:
-            response = requests.get('http://localhost:9090/api/v1/targets', timeout=10)
-            if response.status_code == 200:
-                targets_data = response.json()
-                targets = targets_data.get('data', {}).get('activeTargets', [])
-        except:
-            pass
+        for client_id, data in metrics_store.items():
+            age = current_time - data['last_seen']
+            active_clients.append({
+                'client_id': client_id,
+                'hostname': data['hostname'],
+                'last_seen': age,
+                'active': age < 60
+            })
         
         status = {
-            'prometheus_healthy': prom_healthy,
-            'active_targets': len(targets),
-            'targets': [{
-                'job': t.get('labels', {}).get('job', 'unknown'),
-                'instance': t.get('labels', {}).get('instance', 'unknown'),
-                'health': t.get('health', 'unknown')
-            } for t in targets]
+            'total_clients': len(metrics_store),
+            'active_clients': len([c for c in active_clients if c['active']]),
+            'clients': active_clients
         }
         
-        print(f"📈 System status: Prometheus={prom_healthy}, Targets={len(targets)}")
+        print(f"📈 System status: {len(active_clients)} clients")
         return jsonify(status)
     except Exception as e:
         print(f"❌ Error getting system status: {e}")

@@ -12,8 +12,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY auto-discovery-client.py .
+COPY push-client.py .
 COPY .env .
 
-EXPOSE 8118
-
-CMD ["python3", "auto-discovery-client.py"]
+# Default to push client (no port exposure needed)
+CMD ["python3", "push-client.py"]

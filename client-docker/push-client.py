@@ -75,14 +75,47 @@ def get_db_metrics():
             except mysql.connector.Error:
                 videos_processed = 0
         
+        # Get error videos count
+        try:
+            cursor.execute("SELECT COUNT(*) FROM video_uploads WHERE error_message IS NOT NULL")
+            videos_error = cursor.fetchone()[0]
+        except mysql.connector.Error:
+            try:
+                cursor.execute("SELECT COUNT(*) FROM uploads WHERE error_message IS NOT NULL")
+                videos_error = cursor.fetchone()[0]
+            except mysql.connector.Error:
+                videos_error = 0
+        
+        # Get site statistics count
+        try:
+            cursor.execute("SELECT COUNT(*) FROM video_uploads WHERE site_statics_uploaded = 1")
+            site_statics = cursor.fetchone()[0]
+        except mysql.connector.Error:
+            try:
+                cursor.execute("SELECT COUNT(*) FROM uploads WHERE site_statics_uploaded = 1")
+                site_statics = cursor.fetchone()[0]
+            except mysql.connector.Error:
+                site_statics = 0
+        
+        # Get videos not processed count
+        try:
+            cursor.execute("SELECT COUNT(*) FROM video_uploads WHERE is_processed = 0 OR progress_value < 100")
+            videos_not_processed = cursor.fetchone()[0]
+        except mysql.connector.Error:
+            try:
+                cursor.execute("SELECT COUNT(*) FROM uploads WHERE status != 'completed'")
+                videos_not_processed = cursor.fetchone()[0]
+            except mysql.connector.Error:
+                videos_not_processed = 0
+        
         cursor.close()
         conn.close()
         
-        return connections, videos_processed
+        return connections, videos_processed, videos_error, site_statics, videos_not_processed
         
     except Exception as e:
         print(f"Database error: {e}")
-        return 0, 0
+        return 0, 0, 0, 0, 0
 
 def collect_and_push_metrics(central_host):
     """Collect metrics and push to server"""
@@ -96,7 +129,7 @@ def collect_and_push_metrics(central_host):
     disk_percent = (disk.used / disk.total) * 100
     
     # Database metrics
-    db_connections, videos_processed = get_db_metrics()
+    db_connections, videos_processed, videos_error, site_statics, videos_not_processed = get_db_metrics()
     
     # Prepare metrics payload
     metrics_data = {
@@ -108,7 +141,10 @@ def collect_and_push_metrics(central_host):
             "memory_usage": memory.percent,
             "disk_usage": disk_percent,
             "mysql_connections": db_connections,
-            "videos_processed": videos_processed
+            "videos_processed": videos_processed,
+            "videos_error": videos_error,
+            "site_statics": site_statics,
+            "videos_not_processed": videos_not_processed
         }
     }
     

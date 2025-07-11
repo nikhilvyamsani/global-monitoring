@@ -11,24 +11,26 @@
       "type": "stat",
       "targets": [
         {
-          "expr": "count(up{job=~\"client-.*\"} == 1)",
+          "expr": "count(count by (client_id)(host_cpu_usage))",
           "legendFormat": "Active Clients",
-          "refId": "A"
+          "refId": "A",
+          "instant": true
         }
       ],
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "thresholds"},
+          "color": { "mode": "thresholds" },
           "thresholds": {
             "steps": [
-              {"color": "red", "value": 0},
-              {"color": "yellow", "value": 1},
-              {"color": "green", "value": 2}
+              { "color": "red", "value": 0 },
+              { "color": "yellow", "value": 1 },
+              { "color": "green", "value": 2 }
             ]
-          }
+          },
+          "unit": "none"
         }
       },
-      "gridPos": {"h": 6, "w": 6, "x": 0, "y": 0}
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 }
     },
     {
       "id": 2,
@@ -36,8 +38,8 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "host_cpu_usage",
-          "legendFormat": "{{hostname}} CPU %",
+          "expr": "avg by (client_id)(host_cpu_usage)",
+          "legendFormat": "{{client_id}}",
           "refId": "A"
         }
       ],
@@ -45,10 +47,11 @@
         "defaults": {
           "unit": "percent",
           "min": 0,
-          "max": 100
+          "max": 100,
+          "decimals": 1
         }
       },
-      "gridPos": {"h": 8, "w": 12, "x": 6, "y": 0}
+      "gridPos": { "h": 8, "w": 12, "x": 6, "y": 0 }
     },
     {
       "id": 3,
@@ -56,8 +59,8 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "host_memory_usage",
-          "legendFormat": "{{hostname}} Memory %",
+          "expr": "avg by (client_id)(host_memory_usage)",
+          "legendFormat": "{{client_id}}",
           "refId": "A"
         }
       ],
@@ -65,29 +68,11 @@
         "defaults": {
           "unit": "percent",
           "min": 0,
-          "max": 100
+          "max": 100,
+          "decimals": 1
         }
       },
-      "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0}
-    },
-    {
-      "id": 4,
-      "title": "Videos Processed",
-      "type": "stat",
-      "targets": [
-        {
-          "expr": "videos_processed_total",
-          "legendFormat": "{{hostname}}",
-          "refId": "A"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {"mode": "palette-classic"},
-          "unit": "short"
-        }
-      },
-      "gridPos": {"h": 6, "w": 6, "x": 0, "y": 6}
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 0 }
     },
     {
       "id": 5,
@@ -95,8 +80,8 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "host_disk_usage",
-          "legendFormat": "{{hostname}} Disk %",
+          "expr": "avg by (client_id)(host_disk_usage)",
+          "legendFormat": "{{client_id}}",
           "refId": "A"
         }
       ],
@@ -104,10 +89,11 @@
         "defaults": {
           "unit": "percent",
           "min": 0,
-          "max": 100
+          "max": 100,
+          "decimals": 1
         }
       },
-      "gridPos": {"h": 8, "w": 12, "x": 6, "y": 8}
+      "gridPos": { "h": 8, "w": 12, "x": 6, "y": 8 }
     },
     {
       "id": 6,
@@ -115,56 +101,161 @@
       "type": "timeseries",
       "targets": [
         {
-          "expr": "mysql_active_connections",
-          "legendFormat": "{{hostname}} DB Connections",
+          "expr": "sum by (client_id)(mysql_active_connections)",
+          "legendFormat": "{{client_id}}",
           "refId": "A"
         }
       ],
       "fieldConfig": {
         "defaults": {
           "unit": "short",
-          "min": 0
+          "min": 0,
+          "decimals": 0
         }
       },
-      "gridPos": {"h": 8, "w": 6, "x": 18, "y": 8}
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 8 }
     },
     {
       "id": 7,
+      "title": "Videos Processed",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (client_id)(videos_processed_total)",
+          "legendFormat": "{{client_id}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "min": 0,
+          "decimals": 0
+        }
+      },
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 8 }
+    },
+    {
+      "id": 8,
+      "title": "Error Videos",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (client_id)(videos_error_total)",
+          "legendFormat": "{{client_id}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "min": 0,
+          "decimals": 0,
+          "color": { "mode": "palette-classic" }
+        }
+      },
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 16 }
+    },
+    {
+      "id": 10,
+      "title": "Site Statistics",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (client_id)(site_statics_total)",
+          "legendFormat": "{{client_id}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "min": 0,
+          "decimals": 0,
+          "color": { "mode": "palette-classic" }
+        }
+      },
+      "gridPos": { "h": 8, "w": 6, "x": 12, "y": 16 }
+    },
+    {
+      "id": 11,
+      "title": "Videos Not Processed",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "sum by (client_id)(videos_not_processed_total)",
+          "legendFormat": "{{client_id}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "min": 0,
+          "decimals": 0,
+          "color": { "mode": "palette-classic" }
+        }
+      },
+      "gridPos": { "h": 8, "w": 6, "x": 18, "y": 16 }
+    },
+    {
+      "id": 9,
       "title": "System Resources Overview",
       "type": "table",
       "targets": [
         {
-          "expr": "host_cpu_usage",
+          "expr": "avg by (client_id)(host_cpu_usage)",
           "legendFormat": "",
           "refId": "A",
           "format": "table",
           "instant": true
         },
         {
-          "expr": "host_memory_usage",
+          "expr": "avg by (client_id)(host_memory_usage)",
           "legendFormat": "",
           "refId": "B",
           "format": "table",
           "instant": true
         },
         {
-          "expr": "host_disk_usage",
+          "expr": "avg by (client_id)(host_disk_usage)",
           "legendFormat": "",
           "refId": "C",
           "format": "table",
           "instant": true
         },
         {
-          "expr": "mysql_active_connections",
+          "expr": "sum by (client_id)(mysql_active_connections)",
           "legendFormat": "",
           "refId": "D",
           "format": "table",
           "instant": true
         },
         {
-          "expr": "videos_processed_total",
+          "expr": "sum by (client_id)(videos_processed_total)",
           "legendFormat": "",
           "refId": "E",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "expr": "sum by (client_id)(videos_error_total)",
+          "legendFormat": "",
+          "refId": "F",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "expr": "sum by (client_id)(site_statics_total)",
+          "legendFormat": "",
+          "refId": "G",
+          "format": "table",
+          "instant": true
+        },
+        {
+          "expr": "sum by (client_id)(videos_not_processed_total)",
+          "legendFormat": "",
+          "refId": "H",
           "format": "table",
           "instant": true
         }
@@ -172,7 +263,9 @@
       "transformations": [
         {
           "id": "merge",
-          "options": {}
+          "options": {
+            "byField": "client_id"
+          }
         },
         {
           "id": "organize",
@@ -180,22 +273,156 @@
             "excludeByName": {
               "Time": true,
               "__name__": true,
-              "client_id": true,
               "instance": true,
-              "job": true
+              "job": true,
+              "hostname": true
             },
             "renameByName": {
-              "hostname": "Client",
+              "client_id": "Client",
               "Value #A": "CPU %",
               "Value #B": "Memory %",
               "Value #C": "Disk %",
               "Value #D": "DB Connections",
-              "Value #E": "Videos Processed"
+              "Value #E": "Videos Processed",
+              "Value #F": "Error Videos",
+              "Value #G": "Site Statistics",
+              "Value #H": "Videos Not Processed"
             }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "Client",
+                "desc": false
+              }
+            ]
           }
         }
       ],
-      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16}
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 32 },
+      "options": {
+        "showHeader": true,
+        "footer": {
+          "show": false,
+          "reducer": ["sum"],
+          "countRows": false,
+          "fields": "",
+          "enablePagination": true
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 2,
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "DB Connections"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Videos Processed"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Error Videos"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "red"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Site Statistics"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "blue"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Videos Not Processed"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              },
+              {
+                "id": "decimals",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "orange"
+                }
+              }
+            ]
+          }
+        ]
+      }
     }
   ],
   "time": {

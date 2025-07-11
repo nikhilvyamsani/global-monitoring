@@ -247,7 +247,10 @@ def export_metrics():
                 f'host_memory_usage{{client_id="{client_id}",hostname="{hostname}"}} {metrics["memory_usage"]}',
                 f'host_disk_usage{{client_id="{client_id}",hostname="{hostname}"}} {metrics["disk_usage"]}',
                 f'mysql_active_connections{{client_id="{client_id}",hostname="{hostname}"}} {metrics["mysql_connections"]}',
-                f'videos_processed_total{{client_id="{client_id}",hostname="{hostname}"}} {metrics["videos_processed"]}'
+                f'videos_processed_total{{client_id="{client_id}",hostname="{hostname}"}} {metrics["videos_processed"]}',
+                f'videos_error_total{{client_id="{client_id}",hostname="{hostname}"}} {metrics.get("videos_error", 0)}',
+                f'site_statics_total{{client_id="{client_id}",hostname="{hostname}"}} {metrics.get("site_statics", 0)}',
+                f'videos_not_processed_total{{client_id="{client_id}",hostname="{hostname}"}} {metrics.get("videos_not_processed", 0)}'
             ])
         
         return '\n'.join(prometheus_metrics) + '\n', 200, {'Content-Type': 'text/plain'}

@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  monitoring-server:
+    image: nikhilvyamsani/metrics-server:latest
+    container_name: monitoring-server
+    restart: unless-stopped
+    ports:
+      - "9090:9090"  # Prometheus
+      - "3000:3000"  # Grafana
+      - "5001:5001"  # Registration API
+    volumes:
+      - prometheus-data:/app/prometheus-data
+      - grafana-data:/app/grafana-data
+
+volumes:
+  prometheus-data:
+  grafana-data:

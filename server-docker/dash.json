@@ -1,0 +1,569 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 4,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "mysql"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "videos_error"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "videos_processed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": ["sum"],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "mysql"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  client_id,\n  date,\n  videos_processed,\n  videos_error,\n  videos_not_processed,\n  site_statics\n,\n  ASP,\n  ASN\nFROM created_on_metrics \nWHERE date = '$selected_date' \n  AND client_id = '$selected_client'\nORDER BY client_id, date",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Created On Metrics",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "mysql"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "videos_error"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "videos_processed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": ["sum"],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "mysql"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  client_id,\n  date,\n  videos_processed,\n  videos_error,\n  videos_not_processed,\n  site_statics\n,\n  ASP,\n  ASN\nFROM video_date_metrics \nWHERE date = '$selected_date' \n  AND client_id = '$selected_client'\nORDER BY client_id, date",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Video Date Metrics",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "mysql"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "videos_error"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "videos_processed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "asset_type"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 3,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": ["sum"],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "mysql"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  'linear' as asset_type,\n  client_id,\n  date,\n  videos_processed,\n  videos_error,\n  videos_not_processed,\n  site_statics,\n  ASP,\n  ASN\nFROM linear_created_on_metrics \nWHERE date = '$selected_date' \n  AND client_id = '$selected_client'\n\nUNION ALL\n\nSELECT \n  'fixed' as asset_type,\n  client_id,\n  date,\n  videos_processed,\n  videos_error,\n  videos_not_processed,\n  site_statics,\n  ASP,\n  ASN\nFROM fixed_created_on_metrics \nWHERE date = '$selected_date' \n  AND client_id = '$selected_client'\n\nUNION ALL\n\nSELECT \n  'electrical' as asset_type,\n  client_id,\n  date,\n  videos_processed,\n  videos_error,\n  videos_not_processed,\n  site_statics,\n  ASP,\n  ASN\nFROM electrical_created_on_metrics \nWHERE date = '$selected_date' \n  AND client_id = '$selected_client'\n\nORDER BY asset_type, client_id, date",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Created On Metrics by Asset Type",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "mysql"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "videos_error"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "videos_processed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "asset_type"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 4,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": ["sum"],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "mysql",
+            "uid": "mysql"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  'linear' as asset_type,\n  client_id,\n  date,\n  videos_processed,\n  videos_error,\n  videos_not_processed,\n  site_statics,\n  ASP,\n  ASN\nFROM linear_video_date_metrics \nWHERE date = '$selected_date' \n  AND client_id = '$selected_client'\n\nUNION ALL\n\nSELECT \n  'fixed' as asset_type,\n  client_id,\n  date,\n  videos_processed,\n  videos_error,\n  videos_not_processed,\n  site_statics,\n  ASP,\n  ASN\nFROM fixed_video_date_metrics \nWHERE date = '$selected_date' \n  AND client_id = '$selected_client'\n\nUNION ALL\n\nSELECT \n  'electrical' as asset_type,\n  client_id,\n  date,\n  videos_processed,\n  videos_error,\n  videos_not_processed,\n  site_statics,\n  ASP,\n  ASN\nFROM electrical_video_date_metrics \nWHERE date = '$selected_date' \n  AND client_id = '$selected_client'\n\nORDER BY asset_type, client_id, date",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Video Date Metrics by Asset Type",
+      "type": "table"
+    }
+  ],
+  "preload": false,
+  "refresh": "5s",
+  "schemaVersion": 41,
+  "tags": ["video-metrics"],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "2024-01-01",
+          "value": "2024-01-01"
+        },
+        "label": "Select Date",
+        "name": "selected_date",
+        "options": [
+          {
+            "selected": true,
+            "text": "2024-01-01",
+            "value": "2024-01-01"
+          }
+        ],
+        "query": "2024-01-01",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "vaaan-115.244.183.174",
+          "value": "vaaan-115.244.183.174"
+        },
+        "datasource": {
+          "type": "mysql",
+          "uid": "mysql"
+        },
+        "definition": "SELECT DISTINCT client_id FROM (\n  SELECT client_id FROM created_on_metrics \n  UNION \n  SELECT client_id FROM video_date_metrics\n  UNION \n  SELECT client_id FROM linear_created_on_metrics\n  UNION \n  SELECT client_id FROM fixed_created_on_metrics\n  UNION \n  SELECT client_id FROM electrical_created_on_metrics\n  UNION \n  SELECT client_id FROM linear_video_date_metrics\n  UNION \n  SELECT client_id FROM fixed_video_date_metrics\n  UNION \n  SELECT client_id FROM electrical_video_date_metrics\n) AS all_clients \nORDER BY client_id",
+        "includeAll": false,
+        "label": "Select Client",
+        "name": "selected_client",
+        "options": [],
+        "query": "SELECT DISTINCT client_id FROM (\n  SELECT client_id FROM created_on_metrics \n  UNION \n  SELECT client_id FROM video_date_metrics\n  UNION \n  SELECT client_id FROM linear_created_on_metrics\n  UNION \n  SELECT client_id FROM fixed_created_on_metrics\n  UNION \n  SELECT client_id FROM electrical_created_on_metrics\n  UNION \n  SELECT client_id FROM linear_video_date_metrics\n  UNION \n  SELECT client_id FROM fixed_video_date_metrics\n  UNION \n  SELECT client_id FROM electrical_video_date_metrics\n) AS all_clients \nORDER BY client_id",
+        "refresh": 1,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Video Metrics Dashboard",
+  "uid": "video-metrics-dashboard",
+  "version": 1
+}
